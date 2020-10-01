@@ -9,10 +9,6 @@ import streamlit as st
 # working with sample data.
 import numpy as np
 import pandas as pd
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-import pickle
 import joblib
 
 

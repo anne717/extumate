@@ -10,6 +10,8 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
+#import lime
+#import lime.lime_tabular
 
 
 # In[2]:
@@ -36,22 +38,22 @@ st.set_option('deprecation.showfileUploaderEncoding', False)
 
 
 st.title('Extu-Mate')
-st.header('Helping ICU doctors predict successful removal of mechanical ventilation')
+st.header('Helping ICU doctors decide when to extubate')
 
-time_on_vent = st.number_input(label = 'How long has the patient already been on the ventilator? (hours):')
-anchor_age = st.number_input(label = 'Patient age (years):')
+time_on_vent = st.number_input(label = 'How long has the patient already been on the ventilator? (hours):',value=91)
+anchor_age = st.number_input(label = 'Patient age (years):', value = 62)
 gender = st.radio(label = 'Patient gender:', options  = ['M', 'F'])
-weight = st.number_input(label = 'Patient weight (lb):')
-height = st.number_input(label = 'Patient height (inches):')
-heartrate = st.number_input(label = 'Heart rate (bpm):')
-tidalvolume = st.number_input(label = 'Tidal volume (mL):')
-temp = st.number_input(label = 'Temperature (Celcius):')
-hco3 = st.number_input(label = 'HCO3 (units):')
-creatinine = st.number_input(label = 'Creatining (units):')
-bun = st.number_input(label = 'Blood urea nitrogen ():')
+weight = st.number_input(label = 'Patient weight (lb):', value = 182)
+height = st.number_input(label = 'Patient height (inches):',value = 67)
+heartrate = st.number_input(label = 'Heart rate (bpm):', value = 86)
+tidalvolume = st.number_input(label = 'Tidal volume (mL):', value = 475)
+temp = st.number_input(label = 'Temperature (Celcius):', value = 37.06)
+hco3 = st.number_input(label = 'HCO3 (mEq/L):', value = 25.15)
+creatinine = st.number_input(label = 'Creatinine (mg/dL):', value = 1.24)
+bun = st.number_input(label = 'Blood urea nitrogen (mg/dL):',value = 26.35)
 
 #tidal_weight = tidalvolume/weight
-tidal_weight = 5/2
+tidal_weight = tidalvolume/weight
 
 re_intub_class = 0
 
@@ -70,8 +72,8 @@ sample_test = df_scaled.flatten().reshape(1,-1)
 
 clf.predict(sample_df)
 prediction_percent = clf.predict_proba(sample_test)[0,0]
-st.write('There is a ', prediction_percent,
-'% likelihood that extubation will be successful')
+st.write('If you take your patient off the ventilator now, there is a ', prediction_percent,
+'% chance that they will need to be reintubated')
 
 # In[6]:
 

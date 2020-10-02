@@ -10,8 +10,8 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
-#import lime
-#import lime.lime_tabular
+import lime
+import lime.lime_tabular
 
 
 # In[2]:
@@ -46,7 +46,7 @@ gender = st.radio(label = 'Patient gender:', options  = ['M', 'F'])
 weight = st.number_input(label = 'Patient weight (lb):', value = 182)
 height = st.number_input(label = 'Patient height (inches):',value = 67)
 heartrate = st.number_input(label = 'Heart rate (bpm):', value = 86)
-tidalvolume = st.number_input(label = 'Tidal volume (mL):', value = 475)
+tidalvolume = st.number_input(label = 'Tidal volume (mL):', value = 200)
 temp = st.number_input(label = 'Temperature (Celcius):', value = 37.06)
 hco3 = st.number_input(label = 'HCO3 (mEq/L):', value = 25.15)
 creatinine = st.number_input(label = 'Creatinine (mg/dL):', value = 1.24)
@@ -71,10 +71,40 @@ sample_test = df_scaled.flatten().reshape(1,-1)
 #sample_test = sample_df.drop(labels=['re_intub_class'],axis=1).values
 
 clf.predict(sample_df)
-prediction_percent = clf.predict_proba(sample_test)[0,0]
+prediction_percent = clf.predict_proba(sample_test)[0][0]
 st.write('If you take your patient off the ventilator now, there is a ', prediction_percent,
 '% chance that they will need to be reintubated')
 
+
+X_train = pd.read_feather("strip_train_data")
+X_scaled = preprocessor.transform(X_train)
+
+categs= preprocessor.named_transformers_['cat']['onehot']
+onehot_features = categs.get_feature_names()
+numeric_features = preprocessor.transformers[0][2]
+feature_names = np.concatenate((numeric_features.tolist(),onehot_features))
+
+explainer = lime.lime_tabular.LimeTabularExplainer(X_scaled,  
+                              feature_names=feature_names,  
+                              #class_names=['re_intub_class'], 
+                              #categorical_features=categorical_features ,
+                              verbose=True, 
+                              mode='classification',
+                              discretize_continuous=True)
+
+explog = explainer.explain_instance(sample_test[0,:], clf.predict_proba, num_features=5,top_labels=1)
+#explog.show_in_notebook(show_table=True)
+
+feature_list = explog.as_list()
+num_top_feats = len(feature_list)
+
+j = 0
+for j in np.arange(num_top_feats):
+    salient_feature = feature_list[j][0].split(' ')
+    j = j+1
+    for i in salient_feature:
+        if i in feature_names:
+            st.write(i)
 # In[6]:
 
 

@@ -124,10 +124,11 @@ explainer = lime.lime_tabular.LimeTabularExplainer(X_scaled,
                               #categorical_features=categorical_features ,
                               verbose=True, 
                               mode='classification',
-                              discretize_continuous=True)
+                              discretize_continuous=True,
+                              random_state = 101)
 
 st.cache()
-explog = explainer.explain_instance(sample_test[0,:], clf.predict_proba, num_features=5)
+explog = explainer.explain_instance(sample_test[0,:], clf.predict_proba, num_samples = 100, num_features=5)
 #explog.show_in_notebook(show_table=True)
 
 feature_list = explog.as_list()

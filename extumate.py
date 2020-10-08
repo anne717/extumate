@@ -92,7 +92,7 @@ sample_test = df_scaled.flatten().reshape(1,-1)
 #sample_test = sample_df.drop(labels=['re_intub_class'],axis=1).values
 
 clf.predict(sample_df)
-prediction_percent = np.int(clf.predict_proba(sample_test)[0][0]*100)
+prediction_percent = np.int(clf.predict_proba(sample_test)[0][1]*100)
 sentence = 'If you take your patient off the ventilator now, there is a '+ str(prediction_percent)+'% chance that they will need to be reintubated'
 
 st.header(sentence)

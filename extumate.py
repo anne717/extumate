@@ -134,30 +134,30 @@ explog = explainer.explain_instance(sample_test[0,:], clf.predict_proba, num_sam
 feature_list = explog.as_list()
 num_top_feats = len(feature_list)
 
-printing_features = ''
-if prediction_percent > 50:
-    st.subheader("The likelihood that the patient will need to be reintubated can be explained by the following patient attributes:")
-    j = 0
-    for j in np.arange(num_top_feats):
-            salient_feature = feature_list[j][0].split(' ')
-            j = j+1
-            for i in salient_feature:
-                if i in feature_names:
-                    explainable_feature = feature_dict[i]
-                    printing_features = printing_features + explainable_feature + ', '
-                    #st.write(explainable_feature)
-else:
-    st.write("The likelihood that the patient will need to be reintubated can be explained by the following patient attributes:")
-    j = 0
-    for j in np.arange(num_top_feats):
-            salient_feature = feature_list[j][0].split(' ')
-            j = j+1
-            for i in salient_feature:
-                if i in feature_names:
-                    explainable_feature = feature_dict[i]
-                    printing_features = printing_features + explainable_feature + ', '
-                    #st.write(explainable_feature)
-st.write(printing_features[:-2])                    
+# printing_features = ''
+# if prediction_percent > 50:
+#     st.subheader("The likelihood that the patient will need to be reintubated can be explained by the following patient attributes:")
+#     j = 0
+#     for j in np.arange(num_top_feats):
+#             salient_feature = feature_list[j][0].split(' ')
+#             j = j+1
+#             for i in salient_feature:
+#                 if i in feature_names:
+#                     explainable_feature = feature_dict[i]
+#                     printing_features = printing_features + explainable_feature + ', '
+#                     #st.write(explainable_feature)
+# else:
+#     st.write("The likelihood that the patient will need to be reintubated can be explained by the following patient attributes:")
+#     j = 0
+#     for j in np.arange(num_top_feats):
+#             salient_feature = feature_list[j][0].split(' ')
+#             j = j+1
+#             for i in salient_feature:
+#                 if i in feature_names:
+#                     explainable_feature = feature_dict[i]
+#                     printing_features = printing_features + explainable_feature + ', '
+#                     #st.write(explainable_feature)
+# st.write(printing_features[:-2])                    
     
     
 spiller_words = ['<','=','>','=>','>=','<=','=<']   
@@ -169,7 +169,7 @@ units_ref = ['(bpm)','(mEq/L)','(mg/dL)','(mg/dL)','(mL)','(Celcius)','(%)']
 zip_units= zip(changeable_features, units_ref)
 units_dict = dict(zip_units)
 
-st.subheader("This prediction is driven by feature values in the ranges below.")
+st.subheader("This prediction is driven by feature values in the ranges below:")
 
 j = 0
 for j in np.arange(num_top_feats):
@@ -199,12 +199,17 @@ for j in np.arange(num_top_feats):
                                 value = "{:.2f}".format(np.exp((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])-1)
                                 x = x+value + ' '
                             else:
-                                #st.write(feature_dict[feature])
-                                #st.write((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
-                                #print(feature_dict[feature])
-                                print((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
+                                if (feature=='hco3')|(feature=='temp'):
+                                    #st.write(feature_dict[feature])
+                                    #st.write((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
+                                    #print(feature_dict[feature])
+                                    print((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
+                                    value = (float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature]
+                                    value = "{:.2f}".format((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
+                                    x = x+value + ' '
+                                else: print((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
                                 value = (float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature]
-                                value = "{:.2f}".format((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
+                                value = "{:.0f}".format((float(i)*np.sqrt(var_dict[feature]))+ mean_dict[feature])
                                 x = x+value + ' '
             x_unit = units_dict[feature]
             x = x+x_unit+ ' '
